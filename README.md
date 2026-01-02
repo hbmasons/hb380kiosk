@@ -1,4 +1,5 @@
 Quick Reference for Future Maintenance:
+
 Add/Remove Images:
 
 Just upload to GitHub https://github.com/hbmasons/hb380kiosk/images folder - automatic update
