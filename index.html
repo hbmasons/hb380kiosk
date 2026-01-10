@@ -1,172 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lodge Information Kiosk</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            background: #000;
-            overflow: hidden;
-            cursor: none;
-        }
-        
-        .slideshow-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
-        
-        .slide {
-            display: none;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        .slide.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 1s;
-        }
-        
-        .slide img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .loading {
-            color: white;
-            font-family: Arial, sans-serif;
-            font-size: 2em;
-            text-align: center;
-            padding: 20px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Vertical Display – 3‑Row Layout with Footer Table</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      width: 100vw;
+		height: 100vw;
+      /*height: 3840px;   /* full page height locked to 3840px */
+     /* overflow: hidden; */
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: grid;
+      grid-template-rows: auto 2fr auto;  /* top / middle / bottom */
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "banner"
+        "main"
+        "footer";
+    }
+
+    /* Top banner (image + contact line) */
+    .banner {
+      grid-area: banner;
+      background: #000;
+      border-bottom: 1px solid #444;
+      padding: 0.5rem 0 0.75rem;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .banner img {
+      display: block;
+      margin: 0 auto 0.5rem;
+      max-width: 100%;     /* keep it safe if viewport scales */
+      height: auto;
+    }
+
+    .org-name {
+      /* left empty per your snippet; keep for future use */
+      font-size: 1.6rem;
+      font-weight: bold;
+      visibility: hidden;  /* or remove this div if truly unused */
+      height: 0;
+    }
+
+    .org-contact {
+      font-size: 2.5rem;
+      opacity: 0.9;
+    }
+
+    .org-contact a {
+      color: #fff;
+      text-decoration: underline;
+    }
+	  .org-contact-2 {
+      font-size: 2rem;
+      opacity: 0.9;
+		  font-style="italic";
+    }
+
+
+    /* Middle photo area */
+    .main {
+      grid-area: main;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    .photo-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;    /* or scale-down */
+  object-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+
+    .photo.active {
+      opacity: 1;
+    }
+
+    /* Bottom row: 1-row, 3-column static-width table */
+    .footer-table-wrap {
+      grid-area: footer;
+      background: #222;
+      border-top: 1px solid #444;
+      padding: 0.5rem 1rem 0.75rem;
+    }
+
+    table.footer-table {
+      width: 100%;
+      height: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;   /* equal column widths, fixed layout */
+    }
+
+    .footer-table td {
+      vertical-align: top;
+      padding: 0.5rem 0.75rem;
+      width: 33.33%;         /* explicit equal widths */
+    }
+
+    /* Left column: upcoming events */
+    .events-header {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 0.25rem;
+    }
+
+    .events-list {
+      list-style: none;
+      font-size: 3rem;
+      line-height: 1.4;
+    }
+
+    .events-list li + li {
+      margin-top: 0.15rem;
+    }
+
+    /* Center column: QR code */
+    .qr-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+    }
+
+    .qr-label {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .qr-image {
+      width: 120px;   /* adjust for TV viewing distance */
+      height: 120px;
+      background: #fff;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* Right column: blank (reserved) */
+    .footer-blank {
+      text-align: center;
+		vertical-align: middle; 
+    }
+  </style>
 </head>
 <body>
-    <div class="slideshow-container" id="slideshow">
-        <div class="loading">Loading slideshow...</div>
-    </div>
+    <!-- Top: Organization info -->
+  <header class="banner">
+    <img src="assets/banner.png" width="2160" height="260" alt=""
+    <div class="org-contact">
+      <table width="100%" border="0" >
+        <tbody>
+          <tr>
+            <td width="50%" class="org-contact">
+              <p class="org-contact">Master: Richard West, Sr.</p>
+<p class="org-contact">Secretary: Glen West, PM</p></td>
+			   <td><p class="org-contact">(714) 536-3119</p>
+              <p class="org-contact">info@hbmasons.com</p></td>
+                 </tr>
+        </tbody>
+	  </table>
+	<div class="org-contact-2">
+		 <table width="100%" border="0">
+        <tbody>
+			<tr>
+				<td>Stated Meetings are the first Wednesday of each month. Meetings and fellowship gatherings every other Wednesday.</td>
+			</tr>
+			  
+		</tbody>
+		</table>
+</div>
+  </header>
 
-    <script>
-        // Configuration
-        const SLIDE_DURATION = 10000; // 10 seconds per slide
-        const IMAGES_JSON_URL = 'images.json'; // Generated by GitHub Action
-        
-        let images = [];
-        let currentSlide = 0;
-        let slideInterval;
-        
-        // Fetch list of images from JSON file
-        async function fetchImageList() {
-            try {
-                const response = await fetch(IMAGES_JSON_URL);
-                if (!response.ok) throw new Error('Failed to fetch image list');
-                images = await response.json();
-                
-                if (images.length === 0) {
-                    throw new Error('No images found');
-                }
-                
-                console.log(`Loaded ${images.length} images`);
-                return images;
-            } catch (error) {
-                console.error('Error fetching image list:', error);
-                throw error;
-            }
-        }
-        
-        // Preload images
-        function preloadImages() {
-            return Promise.all(
-                images.map(src => {
-                    return new Promise((resolve, reject) => {
-                        const img = new Image();
-                        img.onload = () => resolve(src);
-                        img.onerror = () => {
-                            console.warn(`Failed to load: ${src}`);
-                            resolve(src); // Don't reject, just warn
-                        };
-                        img.src = src;
-                    });
-                })
-            );
-        }
-        
-        // Create slides
-        function createSlides() {
-            const container = document.getElementById('slideshow');
-            container.innerHTML = '';
-            
-            images.forEach((src, index) => {
-                const slide = document.createElement('div');
-                slide.className = 'slide';
-                if (index === 0) slide.classList.add('active');
-                
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = `Slide ${index + 1}`;
-                
-                slide.appendChild(img);
-                container.appendChild(slide);
-            });
-        }
-        
-        // Show next slide
-        function nextSlide() {
-            const slides = document.querySelectorAll('.slide');
-            slides[currentSlide].classList.remove('active');
-            
-            currentSlide = (currentSlide + 1) % images.length;
-            slides[currentSlide].classList.add('active');
-        }
-        
-        // Start slideshow
-        function startSlideshow() {
-            slideInterval = setInterval(nextSlide, SLIDE_DURATION);
-        }
-        
-        // Initialize
-        async function init() {
-            try {
-                await fetchImageList();
-                await preloadImages();
-                createSlides();
-                startSlideshow();
-            } catch (error) {
-                document.getElementById('slideshow').innerHTML = 
-                    '<div class="loading">Error loading slideshow.<br>Please check your images folder and connection.</div>';
-            }
-        }
-        
-        // Start everything
-        init();
-        
-        // Prevent screen sleeping
-        let wakeLock = null;
-        if ('wakeLock' in navigator) {
-            navigator.wakeLock.request('screen').then(lock => {
-                wakeLock = lock;
-            }).catch(err => {
-                console.log('Wake Lock error:', err);
-            });
-        }
-    </script>
+  <!-- Middle: Rotating photo / event ads -->
+  <main class="main">
+    <div class="photo-container" id="photoContainer">
+      <!-- Images injected by JS -->
+    </div>
+  </main>
+
+  <!-- Bottom: 1-row, 3-column static-width table -->
+  <section class="footer-table-wrap">
+    <table class="footer-table">
+      <tr>
+        <!-- Left column: upcoming events -->
+        <td padding-left="10">
+          <div class="events-header">Upcoming Events</div>
+          <ul class="events-list">
+            <li>January 10th @ 1:00 pm
+            </li>
+            <li>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; - Installation of Officers</li>
+            <li>January 21st @ 7:00 pm</li>
+            <li>&nbsp; &nbsp; &nbsp; &nbsp; - District 907 Gavel Night&nbsp;&nbsp;</li>
+            <li>February 4th @ 7:00 pm</li>
+            <li>&nbsp; &nbsp; &nbsp; &nbsp; - February Stated Meeting</li>
+            <li>&nbsp;</li>
+          </ul>
+        </td>
+
+        <!-- Center column: QR code -->
+        <td>
+          <div class="qr-wrapper"><img src="assets/qrcode.png" width="700" height="700" alt=""/> </div>
+        </td>
+
+        <!-- Right column: blank -->
+        <td>
+          <div class="footer-blank"><img src="assets/lodgelogo2016.png" height="500" alt="" text-align="center"/></div>
+        </td>
+      </tr>
+    </table>
+  </section>
+
+  <script>
+    // --- Slideshow configuration ---
+    const generalFolder = 'images/general/';
+    const eventFolder   = 'images/events/';
+
+    const generalImages = [
+      'general1.jpg',
+      'general2.jpg',
+      'general3.jpg',
+      'general4.jpg'
+    ];
+
+    const eventImages = [
+      'event1.jpg',
+      'event2.jpg',
+      'event3.jpg',
+      'event4.jpg',
+      'event5.jpg',
+      'event6.jpg'
+    ];
+
+    let currentEventIndex = 0;
+    let isShowingEvent = false;
+    const photoContainer = document.getElementById('photoContainer');
+
+    function createImage(src) {
+      const img = document.createElement('img');
+      img.src = src;
+      img.className = 'photo';
+      photoContainer.appendChild(img);
+      return img;
+    }
+
+    function showImage(imgElement) {
+      document.querySelectorAll('#photoContainer .photo').forEach(img => {
+        img.classList.remove('active');
+      });
+      requestAnimationFrame(() => {
+        imgElement.classList.add('active');
+      });
+    }
+
+    function showRandomGeneral() {
+      if (!generalImages.length) return;
+      const i = Math.floor(Math.random() * generalImages.length);
+      const src = generalFolder + generalImages[i];
+      const img = createImage(src);
+      showImage(img);
+    }
+
+    function showNextEvent() {
+      if (!eventImages.length) return;
+      const src = eventFolder + eventImages[currentEventIndex];
+      const img = createImage(src);
+      showImage(img);
+      currentEventIndex = (currentEventIndex + 1) % eventImages.length;
+    }
+
+    function nextSlide() {
+      if (isShowingEvent) {
+        showRandomGeneral();
+        isShowingEvent = false;
+      } else {
+        showNextEvent();
+        isShowingEvent = true;
+      }
+
+      const photos = document.querySelectorAll('#photoContainer .photo');
+      if (photos.length > 4) {
+        photos[0].remove();
+      }
+    }
+
+    // Start slideshow
+    showRandomGeneral();
+    setInterval(nextSlide, 8000);
+  </script>
 </body>
 </html>
